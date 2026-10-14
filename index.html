@@ -231,13 +231,13 @@
                     </div>
 
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <div class="form-group" style="flex: 1; min-width: 180px;">
-                            <label>Ubicación Física (Archivo)</label>
-                            <input type="text" id="ubicacionFisica" placeholder="Ej. Cajon 4, Folder rojo">
+                        <div class="form-group" style="flex: 2; min-width: 220px;">
+                            <label id="label-ubicacion">Fiscalía / Unidad (Penal)</label>
+                            <input type="text" id="ubicacion" placeholder="Ej. Fiscalía Regional San Juan del Río">
                         </div>
-                        <div class="form-group" style="flex: 2; min-width: 250px;">
-                            <label>Anotaciones / Referencias de Búsqueda</label>
-                            <input type="text" id="anotaciones" placeholder="Ej. Asunto taller mecánico, amigo de Luis">
+                        <div class="form-group" style="flex: 1; min-width: 160px;">
+                            <label>Ubicación Física (Archivo)</label>
+                            <input type="text" id="ubicacionFisica" placeholder="Ej. Cajón 4, Folder rojo">
                         </div>
                         <div class="form-group" style="flex: 1; min-width: 150px;">
                             <label>Estatus / Prioridad</label>
@@ -248,6 +248,12 @@
                             </select>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label>Anotaciones / Referencias de Búsqueda</label>
+                        <input type="text" id="anotaciones" placeholder="Ej. Asunto taller mecánico, amigo de Luis">
+                    </div>
+
                     <button type="submit" class="btn">Guardar Registro</button>
                 </form>
             </div>
@@ -263,6 +269,7 @@
                                 <th>Delito</th>
                                 <th id="th-parte1">Ofendido</th>
                                 <th id="th-parte2">Imputado</th>
+                                <th id="th-ubicacion">Fiscalía / Unidad</th>
                                 <th>Ubicación Física</th>
                                 <th>Anotaciones</th>
                                 <th>Estatus</th>
@@ -270,7 +277,7 @@
                             </tr>
                         </thead>
                         <tbody id="tabla-expedientes-body">
-                            <tr><td colspan="9" style="text-align: center; color: #64748b;">No hay registros guardados.</td></tr>
+                            <tr><td colspan="10" style="text-align: center; color: #64748b;">No hay registros guardados.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -320,7 +327,7 @@
             <div class="card">
                 <h2>Respaldos e Integración con Excel (CSV)</h2>
                 <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 15px;">
-                    Puedes descargar tu información en formato compatible con Excel (CSV) o un respaldo general (JSON), así como reimportar tus datos en cualquier momento.
+                    Descarga tu información en formato CSV compatible con Excel o un respaldo completo en JSON.
                 </p>
                 <div class="actions-bar">
                     <button class="btn btn-success" onclick="exportarExcelCSV()">📊 Exportar a Excel (CSV)</button>
@@ -354,6 +361,9 @@
             const lblP2 = document.getElementById('label-parte2');
             const thP1 = document.getElementById('th-parte1');
             const thP2 = document.getElementById('th-parte2');
+            const lblUbi = document.getElementById('label-ubicacion');
+            const txtUbi = document.getElementById('ubicacion');
+            const thUbi = document.getElementById('th-ubicacion');
 
             if (tipo === 'Penal') {
                 grupoDelito.style.display = 'block';
@@ -363,15 +373,21 @@
                 lblP2.innerText = 'Imputado';
                 thP1.innerText = 'Ofendido';
                 thP2.innerText = 'Imputado';
+                lblUbi.innerText = 'Fiscalía / Unidad';
+                txtUbi.placeholder = 'Ej. Fiscalía Regional San Juan del Río';
+                thUbi.innerText = 'Fiscalía / Unidad';
             } else {
                 grupoDelito.style.display = 'none';
-                document.getElementById('delito').value = '';
+                document.getElementById('delito').value = 'N/A';
                 lblId.innerText = 'Número de Expediente (Ej. 1010/2026)';
                 txtId.placeholder = '1010/2026';
-                lblP1.innerText = 'Actor / Demandante';
-                lblP2.innerText = 'Demandado';
-                thP1.innerText = 'Actor / Demandante';
-                thP2.innerText = 'Demandado';
+                lblP1.innerText = 'Parte Demandante / Actor';
+                lblP2.innerText = 'Parte Demandada';
+                thP1.innerText = 'Parte Demandante / Actor';
+                thP2.innerText = 'Parte Demandada';
+                lblUbi.innerText = 'Juzgado';
+                txtUbi.placeholder = 'Ej. Juzgado Primero Civil';
+                thUbi.innerText = 'Juzgado';
             }
         }
 
@@ -385,6 +401,7 @@
                 delito: tipo === 'Penal' ? document.getElementById('delito').value : 'N/A',
                 parte1: document.getElementById('parte1').value,
                 parte2: document.getElementById('parte2').value,
+                ubicacion: document.getElementById('ubicacion').value,
                 ubicacionFisica: document.getElementById('ubicacionFisica').value,
                 anotaciones: document.getElementById('anotaciones').value,
                 estatus: document.getElementById('estatus').value
@@ -408,7 +425,7 @@
         function renderExpedientes(lista = expedientes) {
             const tbody = document.getElementById('tabla-expedientes-body');
             if (lista.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #64748b;">No hay registros encontrados.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: #64748b;">No hay registros encontrados.</td></tr>';
                 return;
             }
             tbody.innerHTML = lista.map(item => `
@@ -418,6 +435,7 @@
                     <td>${item.delito}</td>
                     <td>${item.parte1}</td>
                     <td>${item.parte2}</td>
+                    <td>${item.ubicacion}</td>
                     <td>${item.ubicacionFisica}</td>
                     <td><span style="color: #b45309; font-weight: 500;">${item.anotaciones}</span></td>
                     <td><span class="badge ${item.estatus === 'Urgente' ? 'badge-urgente' : item.estatus === 'Concluido' ? 'badge-concluido' : 'badge-tramite'}">${item.estatus}</span></td>
@@ -432,6 +450,7 @@
             const filtrados = expedientes.filter(item => 
                 (item.identificador && item.identificador.toLowerCase().includes(texto)) ||
                 (item.anotaciones && item.anotaciones.toLowerCase().includes(texto)) ||
+                (item.ubicacion && item.ubicacion.toLowerCase().includes(texto)) ||
                 (item.ubicacionFisica && item.ubicacionFisica.toLowerCase().includes(texto)) ||
                 (item.parte1 && item.parte1.toLowerCase().includes(texto)) ||
                 (item.parte2 && item.parte2.toLowerCase().includes(texto)) ||
@@ -493,9 +512,9 @@
         }
 
         function exportarExcelCSV() {
-            let csv = 'Materia,Identificador,Delito,Ofendido_Actor,Imputado_Demandado,UbicacionFisica,Anotaciones,Estatus\n';
+            let csv = 'Materia,Identificador,Delito,Parte1,Parte2,Ubicacion_Juzgado_Fiscalia,UbicacionFisica,Anotaciones,Estatus\n';
             expedientes.forEach(i => {
-                csv += `"${i.tipo}","${i.identificador}","${i.delito}","${i.parte1}","${i.parte2}","${i.ubicacionFisica}","${i.anotaciones}","${i.estatus}"\n`;
+                csv += `"${i.tipo}","${i.identificador}","${i.delito}","${i.parte1}","${i.parte2}","${i.ubicacion}","${i.ubicacionFisica}","${i.anotaciones}","${i.estatus}"\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
