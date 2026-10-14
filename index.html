@@ -111,15 +111,9 @@
             cursor: pointer;
             font-size: 0.9rem;
         }
-        .btn-secondary {
-            background-color: #4a5568;
-        }
-        .btn-success {
-            background-color: var(--success);
-        }
-        .btn-danger {
-            background-color: var(--danger);
-        }
+        .btn-secondary { background-color: #4a5568; }
+        .btn-success { background-color: var(--success); }
+        .btn-danger { background-color: var(--danger); }
         .actions-bar {
             display: flex;
             gap: 10px;
@@ -136,7 +130,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 0.85rem;
-            min-width: 650px;
+            min-width: 800px;
         }
         th, td {
             padding: 10px;
@@ -167,7 +161,7 @@
     <div class="container">
         <header>
             <h1>Control Integral de Despacho Jurídico</h1>
-            <p class="subtitle">Gestión de Expedientes, Carpetas, Agenda y Respaldos</p>
+            <p class="subtitle">Gestión Avanzada de Expedientes, Carpetas y Agenda</p>
         </header>
 
         <!-- Barra de Navegación -->
@@ -195,37 +189,49 @@
                 </div>
             </div>
             <div class="card">
-                <h2>Resumen de Actividad Reciente</h2>
-                <p style="color: #64748b; font-size: 0.9rem;">Utiliza las pestañas superiores para registrar nuevos expedientes o consultar la agenda.</p>
+                <h2>Resumen de Actividad</h2>
+                <p style="color: #64748b; font-size: 0.9rem;">Selecciona la pestaña superior para registrar o consultar expedientes y carpetas con sus respectivos ofendidos, imputados y delitos.</p>
             </div>
         </div>
 
         <!-- VISTA 2: EXPEDIENTES Y CARPETAS -->
         <div id="vista-expedientes" class="vista-seccion" style="display: none;">
             <div class="card">
-                <h2>Registrar Nuevo Asunto (Civil / Penal)</h2>
+                <h2>Registrar Nuevo Asunto</h2>
                 <form id="form-expediente" onsubmit="guardarExpediente(event)">
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <div class="form-group" style="flex: 1; min-width: 150px;">
-                            <label>Tipo</label>
-                            <select id="tipo" required>
-                                <option value="Civil">Civil / Familiar / Mercantil</option>
+                        <div class="form-group" style="flex: 1; min-width: 180px;">
+                            <label>Materia / Rama</label>
+                            <select id="tipo" onchange="actualizarFormularioRama()" required>
                                 <option value="Penal">Carpeta de Investigación (Penal)</option>
+                                <option value="Civil">Civil / Familiar / Mercantil</option>
                             </select>
                         </div>
-                        <div class="form-group" style="flex: 1; min-width: 150px;">
-                            <label>Número / Identificador</label>
-                            <input type="text" id="identificador" placeholder="Ej. 450/2026" required>
-                        </div>
-                        <div class="form-group" style="flex: 2; min-width: 200px;">
-                            <label>Partes / Imputado / Cliente</label>
-                            <input type="text" id="partes" placeholder="Ej. Juan Pérez vs María López" required>
+                        <div class="form-group" style="flex: 2; min-width: 250px;">
+                            <label id="label-identificador">Número Identificador (Ej. CI/SJR/1010/2026)</label>
+                            <input type="text" id="identificador" placeholder="Ej. CI/SJR/1010/2026" required>
                         </div>
                     </div>
+
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <div class="form-group" style="flex: 2; min-width: 200px;">
-                            <label>Ubicación / Juzgado / Detalles</label>
-                            <input type="text" id="ubicacion" placeholder="Ej. Juzgado Primero Civil">
+                        <div class="form-group" id="grupo-delito" style="flex: 1; min-width: 200px;">
+                            <label>Delito</label>
+                            <input type="text" id="delito" placeholder="Ej. Robo con violencia">
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 200px;">
+                            <label id="label-parte1">Ofendido / Actor</label>
+                            <input type="text" id="parte1" placeholder="Nombre del ofendido o demandante" required>
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 200px;">
+                            <label id="label-parte2">Imputado / Demandado</label>
+                            <input type="text" id="parte2" placeholder="Nombre del imputado o demandado" required>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 2; min-width: 250px;">
+                            <label>Ubicación / Juzgado / Fiscalía</label>
+                            <input type="text" id="ubicacion" placeholder="Ej. Fiscalía Regional San Juan del Río">
                         </div>
                         <div class="form-group" style="flex: 1; min-width: 150px;">
                             <label>Estatus / Prioridad</label>
@@ -246,16 +252,18 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Tipo</th>
+                                <th>Materia</th>
                                 <th>Identificador</th>
-                                <th>Partes / Imputado</th>
-                                <th>Ubicación / Juzgado</th>
+                                <th>Delito</th>
+                                <th id="th-parte1">Ofendido</th>
+                                <th id="th-parte2">Imputado</th>
+                                <th>Ubicación</th>
                                 <th>Estatus</th>
                                 <th>Acción</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-expedientes-body">
-                            <tr><td colspan="6" style="text-align: center; color: #64748b;">No hay registros guardados.</td></tr>
+                            <tr><td colspan="8" style="text-align: center; color: #64748b;">No hay registros guardados.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -270,7 +278,7 @@
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                         <div class="form-group" style="flex: 2; min-width: 200px;">
                             <label>Asunto / Descripción</label>
-                            <input type="text" id="agenda-titulo" placeholder="Ej. Audiencia Inicial / Vencimiento de término" required>
+                            <input type="text" id="agenda-titulo" placeholder="Ej. Audiencia Inicial / Vencimiento" required>
                         </div>
                         <div class="form-group" style="flex: 1; min-width: 150px;">
                             <label>Fecha y Hora</label>
@@ -305,7 +313,7 @@
             <div class="card">
                 <h2>Respaldo y Recuperación de Datos</h2>
                 <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 15px;">
-                    Exporta tus datos en un archivo de respaldo o impórtalos para mantener tu información sincronizada en cualquier dispositivo.
+                    Exporta o importa tus respaldos en formato JSON para mantener la información sincronizada en todos tus dispositivos.
                 </p>
                 <div class="actions-bar">
                     <button class="btn btn-success" onclick="exportarDatos()">📥 Exportar Respaldo (JSON)</button>
@@ -318,32 +326,58 @@
     </div>
 
     <script>
-        // Cargar datos de localStorage o iniciar vacíos
         let expedientes = JSON.parse(localStorage.getItem('despacho_expedientes')) || [];
         let audiencias = JSON.parse(localStorage.getItem('despacho_audiencias')) || [];
 
         function cambiarVista(vista) {
             document.querySelectorAll('.vista-seccion').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-            
             document.getElementById('vista-' + vista).style.display = 'block';
             event.currentTarget.classList.add('active');
             actualizarDashboard();
         }
 
+        function actualizarFormularioRama() {
+            const tipo = document.getElementById('tipo').value;
+            const grupoDelito = document.getElementById('grupo-delito');
+            const lblId = document.getElementById('label-identificador');
+            const txtId = document.getElementById('identificador');
+            const lblP1 = document.getElementById('label-parte1');
+            const lblP2 = document.getElementById('label-parte2');
+
+            if (tipo === 'Penal') {
+                grupoDelito.style.display = 'block';
+                lblId.innerText = 'Identificador (Ej. CI/SJR/1010/2026)';
+                txtId.placeholder = 'CI/SJR/1010/2026';
+                lblP1.innerText = 'Ofendido';
+                lblP2.innerText = 'Imputado';
+            } else {
+                grupoDelito.style.display = 'none';
+                document.getElementById('delito').value = '';
+                lblId.innerText = 'Número de Expediente (Ej. 1010/2026)';
+                txtId.placeholder = '1010/2026';
+                lblP1.innerText = 'Demandante / Actor';
+                lblP2.innerText = 'Demandado';
+            }
+        }
+
         function guardarExpediente(e) {
             e.preventDefault();
+            const tipo = document.getElementById('tipo').value;
             const nuevo = {
                 id: Date.now(),
-                tipo: document.getElementById('tipo').value,
+                tipo: tipo,
                 identificador: document.getElementById('identificador').value,
-                partes: document.getElementById('partes').value,
+                delito: tipo === 'Penal' ? document.getElementById('delito').value : 'N/A (Civil/Mercantil)',
+                parte1: document.getElementById('parte1').value,
+                parte2: document.getElementById('parte2').value,
                 ubicacion: document.getElementById('ubicacion').value,
                 estatus: document.getElementById('estatus').value
             };
             expedientes.push(nuevo);
             localStorage.setItem('despacho_expedientes', JSON.stringify(expedientes));
             document.getElementById('form-expediente').reset();
+            actualizarFormularioRama();
             renderExpedientes();
             alert('¡Registro guardado con éxito!');
         }
@@ -359,14 +393,16 @@
         function renderExpedientes() {
             const tbody = document.getElementById('tabla-expedientes-body');
             if (expedientes.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b;">No hay registros guardados.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #64748b;">No hay registros guardados.</td></tr>';
                 return;
             }
             tbody.innerHTML = expedientes.map(item => `
                 <tr>
                     <td>${item.tipo}</td>
                     <td><strong>${item.identificador}</strong></td>
-                    <td>${item.partes}</td>
+                    <td>${item.delito}</td>
+                    <td>${item.parte1}</td>
+                    <td>${item.parte2}</td>
                     <td>${item.ubicacion}</td>
                     <td><span class="badge ${item.estatus === 'Urgente' ? 'badge-urgente' : item.estatus === 'Concluido' ? 'badge-concluido' : 'badge-tramite'}">${item.estatus}</span></td>
                     <td><button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="eliminarExpediente(${item.id})">Eliminar</button></td>
@@ -452,7 +488,6 @@
             lector.readAsText(archivo);
         }
 
-        // Inicializar tablas al cargar
         renderExpedientes();
         renderAgenda();
     </script>
