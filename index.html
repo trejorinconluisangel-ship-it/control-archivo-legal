@@ -130,7 +130,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 0.85rem;
-            min-width: 800px;
+            min-width: 950px;
         }
         th, td {
             padding: 10px;
@@ -161,7 +161,7 @@
     <div class="container">
         <header>
             <h1>Control Integral de Despacho Jurídico</h1>
-            <p class="subtitle">Gestión Avanzada de Expedientes, Carpetas y Agenda</p>
+            <p class="subtitle">Gestión Avanzada, Archivo Físico y Respaldos</p>
         </header>
 
         <!-- Barra de Navegación -->
@@ -169,7 +169,7 @@
             <button class="nav-tab active" onclick="cambiarVista('dashboard')">Dashboard</button>
             <button class="nav-tab" onclick="cambiarVista('expedientes')">Expedientes / Carpetas</button>
             <button class="nav-tab" onclick="cambiarVista('agenda')">Agenda / Audiencias</button>
-            <button class="nav-tab" onclick="cambiarVista('respaldos')">Respaldos / Datos</button>
+            <button class="nav-tab" onclick="cambiarVista('respaldos')">Respaldos / Excel</button>
         </div>
 
         <!-- VISTA 1: DASHBOARD -->
@@ -189,8 +189,10 @@
                 </div>
             </div>
             <div class="card">
-                <h2>Resumen de Actividad</h2>
-                <p style="color: #64748b; font-size: 0.9rem;">Selecciona la pestaña superior para registrar o consultar expedientes y carpetas con sus respectivos ofendidos, imputados y delitos.</p>
+                <h2>Buscador Rápido por Anotaciones o Ubicación</h2>
+                <div class="form-group">
+                    <input type="text" id="buscador-global" placeholder="Busca por palabra clave: ej. taller mecánico, cajon 4, amigo de Luis..." onkeyup="filtrarAsuntos()">
+                </div>
             </div>
         </div>
 
@@ -208,30 +210,34 @@
                             </select>
                         </div>
                         <div class="form-group" style="flex: 2; min-width: 250px;">
-                            <label id="label-identificador">Número Identificador (Ej. CI/SJR/1010/2026)</label>
+                            <label id="label-identificador">Número Identificador</label>
                             <input type="text" id="identificador" placeholder="Ej. CI/SJR/1010/2026" required>
                         </div>
                     </div>
 
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <div class="form-group" id="grupo-delito" style="flex: 1; min-width: 200px;">
+                        <div class="form-group" id="grupo-delito" style="flex: 1; min-width: 180px;">
                             <label>Delito</label>
                             <input type="text" id="delito" placeholder="Ej. Robo con violencia">
                         </div>
-                        <div class="form-group" style="flex: 1; min-width: 200px;">
-                            <label id="label-parte1">Ofendido / Actor</label>
-                            <input type="text" id="parte1" placeholder="Nombre del ofendido o demandante" required>
+                        <div class="form-group" style="flex: 1; min-width: 180px;">
+                            <label id="label-parte1">Ofendido</label>
+                            <input type="text" id="parte1" placeholder="Nombre del ofendido" required>
                         </div>
-                        <div class="form-group" style="flex: 1; min-width: 200px;">
-                            <label id="label-parte2">Imputado / Demandado</label>
-                            <input type="text" id="parte2" placeholder="Nombre del imputado o demandado" required>
+                        <div class="form-group" style="flex: 1; min-width: 180px;">
+                            <label id="label-parte2">Imputado</label>
+                            <input type="text" id="parte2" placeholder="Nombre del imputado" required>
                         </div>
                     </div>
 
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 180px;">
+                            <label>Ubicación Física (Archivo)</label>
+                            <input type="text" id="ubicacionFisica" placeholder="Ej. Cajon 4, Folder rojo">
+                        </div>
                         <div class="form-group" style="flex: 2; min-width: 250px;">
-                            <label>Ubicación / Juzgado / Fiscalía</label>
-                            <input type="text" id="ubicacion" placeholder="Ej. Fiscalía Regional San Juan del Río">
+                            <label>Anotaciones / Referencias de Búsqueda</label>
+                            <input type="text" id="anotaciones" placeholder="Ej. Asunto taller mecánico, amigo de Luis">
                         </div>
                         <div class="form-group" style="flex: 1; min-width: 150px;">
                             <label>Estatus / Prioridad</label>
@@ -257,13 +263,14 @@
                                 <th>Delito</th>
                                 <th id="th-parte1">Ofendido</th>
                                 <th id="th-parte2">Imputado</th>
-                                <th>Ubicación</th>
+                                <th>Ubicación Física</th>
+                                <th>Anotaciones</th>
                                 <th>Estatus</th>
                                 <th>Acción</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-expedientes-body">
-                            <tr><td colspan="8" style="text-align: center; color: #64748b;">No hay registros guardados.</td></tr>
+                            <tr><td colspan="9" style="text-align: center; color: #64748b;">No hay registros guardados.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -308,17 +315,18 @@
             </div>
         </div>
 
-        <!-- VISTA 4: RESPALDOS Y DATOS -->
+        <!-- VISTA 4: RESPALDOS Y EXCEL -->
         <div id="vista-respaldos" class="vista-seccion" style="display: none;">
             <div class="card">
-                <h2>Respaldo y Recuperación de Datos</h2>
+                <h2>Respaldos e Integración con Excel (CSV)</h2>
                 <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 15px;">
-                    Exporta o importa tus respaldos en formato JSON para mantener la información sincronizada en todos tus dispositivos.
+                    Puedes descargar tu información en formato compatible con Excel (CSV) o un respaldo general (JSON), así como reimportar tus datos en cualquier momento.
                 </p>
                 <div class="actions-bar">
-                    <button class="btn btn-success" onclick="exportarDatos()">📥 Exportar Respaldo (JSON)</button>
-                    <label class="btn btn-secondary" style="cursor: pointer; display: inline-block; margin: 0;">
-                        📤 Importar Respaldo <input type="file" id="file-input" style="display: none;" accept=".json" onchange="importarDatos(event)">
+                    <button class="btn btn-success" onclick="exportarExcelCSV()">📊 Exportar a Excel (CSV)</button>
+                    <button class="btn btn-secondary" onclick="exportarDatos()">📥 Respaldo Completo (JSON)</button>
+                    <label class="btn btn" style="cursor: pointer; display: inline-block; margin: 0; background-color: #2b6cb0;">
+                        📤 Importar Respaldo <input type="file" id="file-input" style="display: none;" accept=".json,.csv" onchange="importarDatos(event)">
                     </label>
                 </div>
             </div>
@@ -344,20 +352,26 @@
             const txtId = document.getElementById('identificador');
             const lblP1 = document.getElementById('label-parte1');
             const lblP2 = document.getElementById('label-parte2');
+            const thP1 = document.getElementById('th-parte1');
+            const thP2 = document.getElementById('th-parte2');
 
             if (tipo === 'Penal') {
                 grupoDelito.style.display = 'block';
-                lblId.innerText = 'Identificador (Ej. CI/SJR/1010/2026)';
+                lblId.innerText = 'Número Identificador (Ej. CI/SJR/1010/2026)';
                 txtId.placeholder = 'CI/SJR/1010/2026';
                 lblP1.innerText = 'Ofendido';
                 lblP2.innerText = 'Imputado';
+                thP1.innerText = 'Ofendido';
+                thP2.innerText = 'Imputado';
             } else {
                 grupoDelito.style.display = 'none';
                 document.getElementById('delito').value = '';
                 lblId.innerText = 'Número de Expediente (Ej. 1010/2026)';
                 txtId.placeholder = '1010/2026';
-                lblP1.innerText = 'Demandante / Actor';
+                lblP1.innerText = 'Actor / Demandante';
                 lblP2.innerText = 'Demandado';
+                thP1.innerText = 'Actor / Demandante';
+                thP2.innerText = 'Demandado';
             }
         }
 
@@ -368,10 +382,11 @@
                 id: Date.now(),
                 tipo: tipo,
                 identificador: document.getElementById('identificador').value,
-                delito: tipo === 'Penal' ? document.getElementById('delito').value : 'N/A (Civil/Mercantil)',
+                delito: tipo === 'Penal' ? document.getElementById('delito').value : 'N/A',
                 parte1: document.getElementById('parte1').value,
                 parte2: document.getElementById('parte2').value,
-                ubicacion: document.getElementById('ubicacion').value,
+                ubicacionFisica: document.getElementById('ubicacionFisica').value,
+                anotaciones: document.getElementById('anotaciones').value,
                 estatus: document.getElementById('estatus').value
             };
             expedientes.push(nuevo);
@@ -390,25 +405,49 @@
             }
         }
 
-        function renderExpedientes() {
+        function renderExpedientes(lista = expedientes) {
             const tbody = document.getElementById('tabla-expedientes-body');
-            if (expedientes.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #64748b;">No hay registros guardados.</td></tr>';
+            if (lista.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #64748b;">No hay registros encontrados.</td></tr>';
                 return;
             }
-            tbody.innerHTML = expedientes.map(item => `
+            tbody.innerHTML = lista.map(item => `
                 <tr>
                     <td>${item.tipo}</td>
                     <td><strong>${item.identificador}</strong></td>
                     <td>${item.delito}</td>
                     <td>${item.parte1}</td>
                     <td>${item.parte2}</td>
-                    <td>${item.ubicacion}</td>
+                    <td>${item.ubicacionFisica}</td>
+                    <td><span style="color: #b45309; font-weight: 500;">${item.anotaciones}</span></td>
                     <td><span class="badge ${item.estatus === 'Urgente' ? 'badge-urgente' : item.estatus === 'Concluido' ? 'badge-concluido' : 'badge-tramite'}">${item.estatus}</span></td>
                     <td><button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="eliminarExpediente(${item.id})">Eliminar</button></td>
                 </tr>
             `).join('');
             actualizarDashboard();
+        }
+
+        function filtrarAsuntos() {
+            const texto = document.getElementById('buscador-global').value.toLowerCase();
+            const filtrados = expedientes.filter(item => 
+                (item.identificador && item.identificador.toLowerCase().includes(texto)) ||
+                (item.anotaciones && item.anotaciones.toLowerCase().includes(texto)) ||
+                (item.ubicacionFisica && item.ubicacionFisica.toLowerCase().includes(texto)) ||
+                (item.parte1 && item.parte1.toLowerCase().includes(texto)) ||
+                (item.parte2 && item.parte2.toLowerCase().includes(texto)) ||
+                (item.delito && item.delito.toLowerCase().includes(texto))
+            );
+            renderExpedientes(filtrados);
+            if(document.getElementById('vista-expedientes').style.display === 'none' && texto.length > 0) {
+                cambiarVistaDirecta('expedientes');
+            }
+        }
+
+        function cambiarVistaDirecta(vista) {
+            document.querySelectorAll('.vista-seccion').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById('vista-' + vista).style.display = 'block';
+            if(vista === 'expedientes') document.querySelectorAll('.nav-tab')[1].classList.add('active');
         }
 
         function guardarAudiencia(e) {
@@ -453,13 +492,26 @@
             document.getElementById('stat-audiencias').innerText = audiencias.length;
         }
 
+        function exportarExcelCSV() {
+            let csv = 'Materia,Identificador,Delito,Ofendido_Actor,Imputado_Demandado,UbicacionFisica,Anotaciones,Estatus\n';
+            expedientes.forEach(i => {
+                csv += `"${i.tipo}","${i.identificador}","${i.delito}","${i.parte1}","${i.parte2}","${i.ubicacionFisica}","${i.anotaciones}","${i.estatus}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'reporte_expedientes_despacho.csv';
+            a.click();
+        }
+
         function exportarDatos() {
             const datos = { expedientes, audiencias };
             const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'respaldo_despacho_juridico.json';
+            a.download = 'respaldo_completo_despacho.json';
             a.click();
         }
 
@@ -477,9 +529,7 @@
                         localStorage.setItem('despacho_audiencias', JSON.stringify(audiencias));
                         renderExpedientes();
                         renderAgenda();
-                        alert('¡Datos importados y restaurados con éxito!');
-                    } else {
-                        alert('El archivo no tiene el formato correcto.');
+                        alert('¡Datos restaurados con éxito!');
                     }
                 } catch (err) {
                     alert('Error al leer el archivo de respaldo.');
