@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
-<head> 
+<head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Control Integral de Despacho Jurídico</title>
     <style>
         :root {
@@ -12,61 +12,70 @@
             --card: #ffffff;
             --text: #2d3748;
             --border: #e2e8f0;
+            --danger: #e53e3e;
+            --success: #38a169;
+            --warning: #d69e2e;
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
-            padding: 15px;
+            padding: 10px;
+            -webkit-text-size-adjust: 100%;
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 5px;
         }
         header {
             text-align: center;
             margin-bottom: 20px;
         }
-        header h1 {
-            color: var(--primary);
-            margin-bottom: 5px;
+        h1 {
             font-size: 1.5rem;
+            color: var(--primary);
+            margin: 10px 0 5px 0;
         }
+        p.subtitle {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin: 0;
+        }
+        /* Navegación */
         .nav-tabs {
             display: flex;
-            gap: 5px;
-            overflow-x: auto;
-            margin-bottom: 20px;
-            padding-bottom: 5px;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 15px;
+            justify-content: center;
         }
-        .tab-btn {
-            padding: 10px 15px;
-            background-color: #cbd5e0;
+        .nav-tab {
+            background-color: #cbd5e1;
             border: none;
-            border-radius: 5px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
             cursor: pointer;
-            font-weight: bold;
-            color: #4a5568;
-            white-space: nowrap;
-            font-size: 0.9rem;
+            color: #334155;
+            flex: 1 1 auto;
+            text-align: center;
+            min-width: 120px;
         }
-        .tab-btn.active {
+        .nav-tab.active {
             background-color: var(--primary);
             color: white;
         }
-        .section-view {
-            display: none;
-        }
-        .section-view.active {
-            display: block;
-        }
+        /* Tarjetas y Secciones */
         .card {
-            background-color: var(--card);
-            padding: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.04);
-            margin-bottom: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         h2 {
             font-size: 1.1rem;
@@ -75,461 +84,377 @@
             border-bottom: 2px solid var(--border);
             padding-bottom: 8px;
         }
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 12px;
+        .form-group {
             margin-bottom: 12px;
         }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
         label {
-            font-size: 0.8rem;
+            display: block;
+            font-size: 0.85rem;
             font-weight: bold;
-            margin-bottom: 4px;
-            color: #4a5568;
+            margin-bottom: 5px;
         }
         input, select, textarea {
-            padding: 9px;
+            width: 100%;
+            padding: 10px;
             border: 1px solid var(--border);
-            border-radius: 4px;
-            font-size: 0.9rem;
-        }
-        textarea {
-            resize: vertical;
-            height: 50px;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
         }
         .btn {
-            background-color: var(--secondary);
+            background-color: var(--primary);
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
+            padding: 10px 16px;
+            border-radius: 6px;
             font-weight: bold;
+            cursor: pointer;
             font-size: 0.9rem;
         }
-        .btn:hover { background-color: #2c5282; }
+        .btn-secondary {
+            background-color: #4a5568;
+        }
+        .btn-success {
+            background-color: var(--success);
+        }
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        .actions-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        /* Tablas responsivas */
         .table-responsive {
+            width: 100%;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-            background: white;
             font-size: 0.85rem;
+            min-width: 650px;
         }
         th, td {
             padding: 10px;
-            text-align: left;
             border-bottom: 1px solid var(--border);
+            text-align: left;
         }
         th {
-            background-color: #edf2f7;
+            background-color: #f8fafc;
             color: var(--primary);
         }
         .badge {
-            padding: 3px 8px;
-            border-radius: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
             font-size: 0.75rem;
             font-weight: bold;
-            display: inline-block;
-        }
-        .badge-urgente { background-color: #fed7d7; color: #9b2c2c; }
-        .badge-tramite { background-color: #feebc8; color: #9c4221; }
-        .badge-concluido { background-color: #c6f6d5; color: #22543d; }
-        .badge-suspendido { background-color: #e2e8f0; color: #4a5568; }
-        
-        .actions-btn {
-            background: #e53e3e;
             color: white;
-            border: none;
-            padding: 5px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.75rem;
         }
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 15px;
+        .badge-urgente { background-color: var(--danger); }
+        .badge-tramite { background-color: var(--warning); }
+        .badge-concluido { background-color: var(--success); }
+        
+        @media (max-width: 768px) {
+            .nav-tab { flex: 1 1 45%; min-width: unset; }
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <header>
+            <h1>Control Integral de Despacho Jurídico</h1>
+            <p class="subtitle">Gestión de Expedientes, Carpetas, Agenda y Respaldos</p>
+        </header>
 
-<div class="container">
-    <header>
-        <h1>Control Integral de Archivo y Despacho</h1>
-        <p>Gestión de expedientes, carpetas, agenda y pendientes</p>
-    </header>
-
-    <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('dashboard')">Panel de Control</button>
-        <button class="tab-btn" onclick="switchTab('civiles')">Expedientes (Civil/Otras)</button>
-        <button class="tab-btn" onclick="switchTab('penales')">Carpetas (Penal)</button>
-        <button class="tab-btn" onclick="switchTab('agenda')">Agenda / Audiencias</button>
-        <button class="tab-btn" onclick="switchTab('pendientes')">Recordatorios</button>
-    </div>
-
-    <!-- 1. PANEL DE CONTROL Y BUSCADOR AVANZADO -->
-    <div id="dashboard" class="section-view active">
-        <div class="card">
-            <h2>Buscador Global Avanzado</h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Buscar por Texto (Nombre, No. Expediente/Carpeta, Delito)</label>
-                    <input type="text" id="global-search" onkeyup="filterGlobal()" placeholder="Escribe para buscar...">
-                </div>
-                <div class="form-group">
-                    <label>Filtrar por Estatus / Etiqueta</label>
-                    <select id="global-status" onchange="filterGlobal()">
-                        <option value="">Todas las etiquetas</option>
-                        <option value="Urgente">🔴 Urgente</option>
-                        <option value="En Trámite">🟡 En Trámite</option>
-                        <option value="Concluido">🟢 Concluido</option>
-                        <option value="Suspendido">🔵 Suspendido</option>
-                    </select>
-                </div>
-            </div>
+        <!-- Barra de Navegación -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="cambiarVista('dashboard')">Dashboard</button>
+            <button class="nav-tab" onclick="cambiarVista('expedientes')">Expedientes / Carpetas</button>
+            <button class="nav-tab" onclick="cambiarVista('agenda')">Agenda / Audiencias</button>
+            <button class="nav-tab" onclick="cambiarVista('respaldos')">Respaldos / Datos</button>
         </div>
 
-        <div class="dashboard-grid">
-            <div class="card">
-                <h2>Próximos Eventos y Audiencias</h2>
-                <div id="dash-agenda-list">Sin eventos próximos.</div>
+        <!-- VISTA 1: DASHBOARD -->
+        <div id="vista-dashboard" class="vista-seccion">
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+                <div class="card" style="flex: 1; min-width: 200px; text-align: center;">
+                    <h3 style="margin: 0; color: #64748b; font-size: 0.9rem;">Total Registros</h3>
+                    <p id="stat-total" style="font-size: 2rem; font-weight: bold; color: var(--primary); margin: 5px 0;">0</p>
+                </div>
+                <div class="card" style="flex: 1; min-width: 200px; text-align: center;">
+                    <h3 style="margin: 0; color: #64748b; font-size: 0.9rem;">Urgentes</h3>
+                    <p id="stat-urgentes" style="font-size: 2rem; font-weight: bold; color: var(--danger); margin: 5px 0;">0</p>
+                </div>
+                <div class="card" style="flex: 1; min-width: 200px; text-align: center;">
+                    <h3 style="margin: 0; color: #64748b; font-size: 0.9rem;">Próximas Audiencias</h3>
+                    <p id="stat-audiencias" style="font-size: 2rem; font-weight: bold; color: var(--warning); margin: 5px 0;">0</p>
+                </div>
             </div>
             <div class="card">
-                <h2>Recordatorios Prioritarios</h2>
-                <div id="dash-tasks-list">Sin pendientes registrados.</div>
+                <h2>Resumen de Actividad Reciente</h2>
+                <p style="color: #64748b; font-size: 0.9rem;">Utiliza las pestañas superiores para registrar nuevos expedientes o consultar la agenda.</p>
             </div>
         </div>
 
-        <div class="card">
-            <h2>Resultados de Búsqueda Global</h2>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Tipo</th>
-                            <th>Identificador</th>
-                            <th>Partes / Imputado</th>
-                            <th>Ubicación / Detalles</th>
-                            <th>Estatus</th>
-                        </tr>
-                    </thead>
-                    <tbody id="global-results-tbody">
-                        <tr><td colspan="5" style="text-align:center;">Usa el buscador superior para filtrar registros.</td></tr>
-                    </tbody>
-                </table>
+        <!-- VISTA 2: EXPEDIENTES Y CARPETAS -->
+        <div id="vista-expedientes" class="vista-seccion" style="display: none;">
+            <div class="card">
+                <h2>Registrar Nuevo Asunto (Civil / Penal)</h2>
+                <form id="form-expediente" onsubmit="guardarExpediente(event)">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 150px;">
+                            <label>Tipo</label>
+                            <select id="tipo" required>
+                                <option value="Civil">Civil / Familiar / Mercantil</option>
+                                <option value="Penal">Carpeta de Investigación (Penal)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 150px;">
+                            <label>Número / Identificador</label>
+                            <input type="text" id="identificador" placeholder="Ej. 450/2026" required>
+                        </div>
+                        <div class="form-group" style="flex: 2; min-width: 200px;">
+                            <label>Partes / Imputado / Cliente</label>
+                            <input type="text" id="partes" placeholder="Ej. Juan Pérez vs María López" required>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 2; min-width: 200px;">
+                            <label>Ubicación / Juzgado / Detalles</label>
+                            <input type="text" id="ubicacion" placeholder="Ej. Juzgado Primero Civil">
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 150px;">
+                            <label>Estatus / Prioridad</label>
+                            <select id="estatus">
+                                <option value="Urgente">🔴 Urgente</option>
+                                <option value="En Trámite" selected>🟡 En Trámite</option>
+                                <option value="Concluido">🟢 Concluido</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Guardar Registro</button>
+                </form>
             </div>
-        </div>
-    </div>
 
-    <!-- 2. EXPEDIENTES CIVILES -->
-    <div id="civiles" class="section-view">
-        <div class="card">
-            <h2>Registrar Expediente (Civil / Familiar / Mercantil)</h2>
-            <form onsubmit="saveCivil(event)">
-                <div class="form-grid">
-                    <div class="form-group"><label>No. de Expediente / Toca</label><input type="text" id="c_num" required></div>
-                    <div class="form-group"><label>Materia</label><select id="c_mat"><option>Civil</option><option>Familiar</option><option>Mercantil</option><option>Laboral</option><option>Administrativo</option></select></div>
-                    <div class="form-group"><label>Juzgado</label><input type="text" id="c_juz" required></div>
-                    <div class="form-group"><label>Actor / Demandante</label><input type="text" id="c_act" required></div>
-                    <div class="form-group"><label>Demandado</label><input type="text" id="c_dem" required></div>
-                    <div class="form-group"><label>Estatus / Etiqueta</label><select id="c_status"><option value="En Trámite">🟡 En Trámite</option><option value="Urgente">🔴 Urgente</option><option value="Concluido">🟢 Concluido</option><option value="Suspendido">🔵 Suspendido</option></select></div>
-                    <div class="form-group"><label>Ubicación Física (Cajón)</label><input type="text" id="c_caj" required placeholder="Ej. Cajón 2"></div>
+            <div class="card">
+                <h2>Listado General de Asuntos</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Identificador</th>
+                                <th>Partes / Imputado</th>
+                                <th>Ubicación / Juzgado</th>
+                                <th>Estatus</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-expedientes-body">
+                            <tr><td colspan="6" style="text-align: center; color: #64748b;">No hay registros guardados.</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="form-group" style="margin-bottom:10px;"><label>Última Actualización</label><textarea id="c_actua"></textarea></div>
-                <button type="submit" class="btn">Guardar Expediente</button>
-            </form>
-        </div>
-        <div class="card">
-            <h2>Listado de Expedientes</h2>
-            <div class="table-responsive">
-                <table>
-                    <thead><tr><th>Expediente</th><th>Materia</th><th>Juzgado</th><th>Partes</th><th>Estatus</th><th>Cajón</th><th>Acciones</th></tr></thead>
-                    <tbody id="civiles-tbody"></tbody>
-                </table>
             </div>
         </div>
-    </div>
 
-    <!-- 3. CARPETAS PENALES -->
-    <div id="penales" class="section-view">
-        <div class="card">
-            <h2>Registrar Carpeta de Investigación (Penal)</h2>
-            <form onsubmit="savePenal(event)">
-                <div class="form-grid">
-                    <div class="form-group"><label>No. de Carpeta</label><input type="text" id="p_num" required></div>
-                    <div class="form-group"><label>Delito</label><input type="text" id="p_del" required></div>
-                    <div class="form-group"><label>Fiscalía / Unidad</label><input type="text" id="p_fis" required></div>
-                    <div class="form-group"><label>Fiscal a Cargo</label><input type="text" id="p_fisc" required></div>
-                    <div class="form-group"><label>Imputado</label><input type="text" id="p_imp" required></div>
-                    <div class="form-group"><label>Ofendido / Víctima</label><input type="text" id="p_ofe" required></div>
-                    <div class="form-group"><label>Estatus / Etiqueta</label><select id="p_status"><option value="En Trámite">🟡 En Trámite</option><option value="Urgente">🔴 Urgente</option><option value="Concluido">🟢 Concluido</option><option value="Suspendido">🔵 Suspendido</option></select></div>
-                    <div class="form-group"><label>Ubicación Física (Cajón)</label><input type="text" id="p_caj" required placeholder="Ej. Cajón Penal 1"></div>
+        <!-- VISTA 3: AGENDA / AUDIENCIAS -->
+        <div id="vista-agenda" class="vista-seccion" style="display: none;">
+            <div class="card">
+                <h2>Programar Audiencia o Vencimiento</h2>
+                <form id="form-agenda" onsubmit="guardarAudiencia(event)">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 2; min-width: 200px;">
+                            <label>Asunto / Descripción</label>
+                            <input type="text" id="agenda-titulo" placeholder="Ej. Audiencia Inicial / Vencimiento de término" required>
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 150px;">
+                            <label>Fecha y Hora</label>
+                            <input type="datetime-local" id="agenda-fecha" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Agendar Evento</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Próximos Eventos</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Descripción</th>
+                                <th>Fecha y Hora</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-agenda-body">
+                            <tr><td colspan="3" style="text-align: center; color: #64748b;">Sin eventos agendados.</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="form-group" style="margin-bottom:10px;"><label>Última Actualización</label><textarea id="p_actua"></textarea></div>
-                <button type="submit" class="btn">Guardar Carpeta</button>
-            </form>
-        </div>
-        <div class="card">
-            <h2>Listado de Carpetas de Investigación</h2>
-            <div class="table-responsive">
-                <table>
-                    <thead><tr><th>Carpeta</th><th>Delito</th><th>Fiscalía / Fiscal</th><th>Imputado / Ofendido</th><th>Estatus</th><th>Cajón</th><th>Acciones</th></tr></thead>
-                    <tbody id="penales-tbody"></tbody>
-                </table>
             </div>
         </div>
-    </div>
 
-    <!-- 4. AGENDA -->
-    <div id="agenda" class="section-view">
-        <div class="card">
-            <h2>Agendar Audiencia o Cita</h2>
-            <form onsubmit="saveAgenda(event)">
-                <div class="form-grid">
-                    <div class="form-group"><label>Título del Evento</label><input type="text" id="a_title" required placeholder="Ej. Audiencia Inicial / Cita con Cliente"></div>
-                    <div class="form-group"><label>Fecha y Hora</label><input type="datetime-local" id="a_date" required></div>
-                    <div class="form-group"><label>Tipo</label><select id="a_type"><option>Audiencia</option><option>Cita con Cliente</option><option>Vencimiento de Término</option><option>Diligencia</option></select></div>
-                    <div class="form-group"><label>Asunto Relacionado (Expediente/Carpeta)</label><input type="text" id="a_ref" placeholder="Ej. 450/2025"></div>
+        <!-- VISTA 4: RESPALDOS Y DATOS -->
+        <div id="vista-respaldos" class="vista-seccion" style="display: none;">
+            <div class="card">
+                <h2>Respaldo y Recuperación de Datos</h2>
+                <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 15px;">
+                    Exporta tus datos en un archivo de respaldo o impórtalos para mantener tu información sincronizada en cualquier dispositivo.
+                </p>
+                <div class="actions-bar">
+                    <button class="btn btn-success" onclick="exportarDatos()">📥 Exportar Respaldo (JSON)</button>
+                    <label class="btn btn-secondary" style="cursor: pointer; display: inline-block; margin: 0;">
+                        📤 Importar Respaldo <input type="file" id="file-input" style="display: none;" accept=".json" onchange="importarDatos(event)">
+                    </label>
                 </div>
-                <button type="submit" class="btn">Agendar Evento</button>
-            </form>
-        </div>
-        <div class="card">
-            <h2>Calendario de Eventos Programados</h2>
-            <div class="table-responsive">
-                <table>
-                    <thead><tr><th>Fecha y Hora</th><th>Tipo</th><th>Evento</th><th>Asunto Relacionado</th><th>Acción</th></tr></thead>
-                    <tbody id="agenda-tbody"></tbody>
-                </table>
             </div>
         </div>
     </div>
 
-    <!-- 5. RECORDATORIOS Y PENDIENTES -->
-    <div id="pendientes" class="section-view">
-        <div class="card">
-            <h2>Nuevo Pendiente o Tarea</h2>
-            <form onsubmit="saveTask(event)">
-                <div class="form-grid">
-                    <div class="form-group"><label>Descripción del Pendiente</label><input type="text" id="t_desc" required placeholder="Ej. Presentar escrito de alegatos"></div>
-                    <div class="form-group"><label>Prioridad</label><select id="t_prio"><option value="Alta">🔴 Alta</option><option value="Media">🟡 Media</option><option value="Baja">🟢 Baja</option></select></div>
-                </div>
-                <button type="submit" class="btn">Añadir Pendiente</button>
-            </form>
-        </div>
-        <div class="card">
-            <h2>Lista de Tareas Pendientes</h2>
-            <div class="table-responsive">
-                <table>
-                    <thead><tr><th>Prioridad</th><th>Descripción</th><th>Acción</th></tr></thead>
-                    <tbody id="tasks-tbody"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    <script>
+        // Cargar datos de localStorage o iniciar vacíos
+        let expedientes = JSON.parse(localStorage.getItem('despacho_expedientes')) || [];
+        let audiencias = JSON.parse(localStorage.getItem('despacho_audiencias')) || [];
 
-</div>
-
-<script>
-    function switchTab(tabId) {
-        document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
-        if(tabId === 'dashboard') loadDashboard();
-    }
-
-    function getBadgeClass(status) {
-        if(status === 'Urgente') return 'badge-urgente';
-        if(status === 'En Trámite') return 'badge-tramite';
-        if(status === 'Concluido') return 'badge-concluido';
-        return 'badge-suspendido';
-    }
-
-    // Datos locales
-    let civiles = JSON.parse(localStorage.getItem('civiles')) || [];
-    let penales = JSON.parse(localStorage.getItem('penales')) || [];
-    let agenda = JSON.parse(localStorage.getItem('agenda')) || [];
-    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-
-    function saveCivil(e) {
-        e.preventDefault();
-        civiles.push({
-            id: Date.now(), type: 'Civil',
-            num: document.getElementById('c_num').value,
-            mat: document.getElementById('c_mat').value,
-            juz: document.getElementById('c_juz').value,
-            act: document.getElementById('c_act').value,
-            dem: document.getElementById('c_dem').value,
-            status: document.getElementById('c_status').value,
-            caj: document.getElementById('c_caj').value,
-            actua: document.getElementById('c_actua').value
-        });
-        localStorage.setItem('civiles', JSON.stringify(civiles));
-        e.target.reset();
-        renderCiviles();
-        alert('Expediente guardado con éxito');
-    }
-
-    function savePenal(e) {
-        e.preventDefault();
-        penales.push({
-            id: Date.now(), type: 'Penal',
-            num: document.getElementById('p_num').value,
-            del: document.getElementById('p_del').value,
-            fis: document.getElementById('p_fis').value,
-            fisc: document.getElementById('p_fisc').value,
-            imp: document.getElementById('p_imp').value,
-            ofe: document.getElementById('p_ofe').value,
-            status: document.getElementById('p_status').value,
-            caj: document.getElementById('p_caj').value,
-            actua: document.getElementById('p_actua').value
-        });
-        localStorage.setItem('penales', JSON.stringify(penales));
-        e.target.reset();
-        renderPenales();
-        alert('Carpeta penal guardada con éxito');
-    }
-
-    function saveAgenda(e) {
-        e.preventDefault();
-        agenda.push({
-            id: Date.now(),
-            title: document.getElementById('a_title').value,
-            date: document.getElementById('a_date').value,
-            type: document.getElementById('a_type').value,
-            ref: document.getElementById('a_ref').value
-        });
-        agenda.sort((a,b) => new Date(a.date) - new Date(b.date));
-        localStorage.setItem('agenda', JSON.stringify(agenda));
-        e.target.reset();
-        renderAgenda();
-        alert('Evento agendado con éxito');
-    }
-
-    function saveTask(e) {
-        e.preventDefault();
-        tasks.push({
-            id: Date.now(),
-            desc: document.getElementById('t_desc').value,
-            prio: document.getElementById('t_prio').value
-        });
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        e.target.reset();
-        renderTasks();
-    }
-
-    function renderCiviles() {
-        const tbody = document.getElementById('civiles-tbody');
-        tbody.innerHTML = civiles.map(i => `
-            <tr>
-                <td><strong>${i.num}</strong></td>
-                <td>${i.mat}</td>
-                <td>${i.juz}</td>
-                <td>Actor: ${i.act}<br>Dem: ${i.dem}</td>
-                <td><span class="badge ${getBadgeClass(i.status)}">${i.status}</span></td>
-                <td>${i.caj}</td>
-                <td><button class="actions-btn" onclick="delCivil(${i.id})">Borrar</button></td>
-            </tr>
-        `).join('');
-    }
-
-    function renderPenales() {
-        const tbody = document.getElementById('penales-tbody');
-        tbody.innerHTML = penales.map(i => `
-            <tr>
-                <td><strong>${i.num}</strong></td>
-                <td>${i.del}</td>
-                <td>${i.fis}<br><small>Fiscal: ${i.fisc}</small></td>
-                <td>Imp: ${i.imp}<br>Ofe: ${i.ofe}</td>
-                <td><span class="badge ${getBadgeClass(i.status)}">${i.status}</span></td>
-                <td>${i.caj}</td>
-                <td><button class="actions-btn" onclick="delPenal(${i.id})">Borrar</button></td>
-            </tr>
-        `).join('');
-    }
-
-    function renderAgenda() {
-        const tbody = document.getElementById('agenda-tbody');
-        tbody.innerHTML = agenda.map(i => `
-            <tr>
-                <td>${i.date.replace('T', ' ')}</td>
-                <td><strong>${i.type}</strong></td>
-                <td>${i.title}</td>
-                <td>${i.ref || 'N/A'}</td>
-                <td><button class="actions-btn" onclick="delAgenda(${i.id})">Borrar</button></td>
-            </tr>
-        `).join('');
-    }
-
-    function renderTasks() {
-        const tbody = document.getElementById('tasks-tbody');
-        tbody.innerHTML = tasks.map(i => `
-            <tr>
-                <td><span class="badge ${i.prio === 'Alta' ? 'badge-urgente' : 'badge-tramite'}">${i.prio}</span></td>
-                <td>${i.desc}</td>
-                <td><button class="actions-btn" onclick="delTask(${i.id})">Completar</button></td>
-            </tr>
-        `).join('');
-    }
-
-    function delCivil(id) { civiles = civiles.filter(x => x.id !== id); localStorage.setItem('civiles', JSON.stringify(civiles)); renderCiviles(); }
-    function delPenal(id) { penales = penales.filter(x => x.id !== id); localStorage.setItem('penales', JSON.stringify(penales)); renderPenales(); }
-    function delAgenda(id) { agenda = agenda.filter(x => x.id !== id); localStorage.setItem('agenda', JSON.stringify(agenda)); renderAgenda(); }
-    function delTask(id) { tasks = tasks.filter(x => x.id !== id); localStorage.setItem('tasks', JSON.stringify(tasks)); renderTasks(); }
-
-    function filterGlobal() {
-        const query = document.getElementById('global-search').value.toLowerCase();
-        const statusFilter = document.getElementById('global-status').value;
-        const tbody = document.getElementById('global-results-tbody');
-        
-        let all = [
-            ...civiles.map(x => ({tipo: 'Civil', num: x.num, info: `Actor: ${x.act} | Dem: ${x.dem}`, loc: `Cajón: ${x.caj} (${x.mat})`, status: x.status})),
-            ...penales.map(x => ({tipo: 'Penal', num: x.num, info: `Imputado: ${x.imp} | Ofendido: ${x.ofe}`, loc: `Cajón: ${x.caj} (Delito: ${x.del})`, status: x.status}))
-        ];
-
-        let filtered = all.filter(item => {
-            let matchesQuery = query === '' || Object.values(item).some(val => val.toLowerCase().includes(query));
-            let matchesStatus = statusFilter === '' || item.status === statusFilter;
-            return matchesQuery && matchesStatus;
-        });
-
-        if(filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No se encontraron coincidencias.</td></tr>`;
-            return;
+        function cambiarVista(vista) {
+            document.querySelectorAll('.vista-seccion').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('vista-' + vista).style.display = 'block';
+            event.currentTarget.classList.add('active');
+            actualizarDashboard();
         }
 
-        tbody.innerHTML = filtered.map(i => `
-            <tr>
-                <td><strong>${i.tipo}</strong></td>
-                <td>${i.num}</td>
-                <td>${i.info}</td>
-                <td>${i.loc}</td>
-                <td><span class="badge ${getBadgeClass(i.status)}">${i.status}</span></td>
-            </tr>
-        `).join('');
-    }
+        function guardarExpediente(e) {
+            e.preventDefault();
+            const nuevo = {
+                id: Date.now(),
+                tipo: document.getElementById('tipo').value,
+                identificador: document.getElementById('identificador').value,
+                partes: document.getElementById('partes').value,
+                ubicacion: document.getElementById('ubicacion').value,
+                estatus: document.getElementById('estatus').value
+            };
+            expedientes.push(nuevo);
+            localStorage.setItem('despacho_expedientes', JSON.stringify(expedientes));
+            document.getElementById('form-expediente').reset();
+            renderExpedientes();
+            alert('¡Registro guardado con éxito!');
+        }
 
-    function loadDashboard() {
-        document.getElementById('dash-agenda-list').innerHTML = agenda.slice(0, 3).map(i => `<p>📅 <strong>${i.date.replace('T', ' ')}</strong>: ${i.title}</p>`).join('') || '<p>Sin eventos próximos.</p>';
-        document.getElementById('dash-tasks-list').innerHTML = tasks.slice(0, 3).map(i => `<p>📌 [${i.prio}] ${i.desc}</p>`).join('') || '<p>Sin pendientes.</p>';
-    }
+        function eliminarExpediente(id) {
+            if(confirm('¿Desea eliminar este registro?')) {
+                expedientes = expedientes.filter(item => item.id !== id);
+                localStorage.setItem('despacho_expedientes', JSON.stringify(expedientes));
+                renderExpedientes();
+            }
+        }
 
-    // Inicializar vistas
-    renderCiviles();
-    renderPenales();
-    renderAgenda();
-    renderTasks();
-    loadDashboard();
-</script>
+        function renderExpedientes() {
+            const tbody = document.getElementById('tabla-expedientes-body');
+            if (expedientes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b;">No hay registros guardados.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = expedientes.map(item => `
+                <tr>
+                    <td>${item.tipo}</td>
+                    <td><strong>${item.identificador}</strong></td>
+                    <td>${item.partes}</td>
+                    <td>${item.ubicacion}</td>
+                    <td><span class="badge ${item.estatus === 'Urgente' ? 'badge-urgente' : item.estatus === 'Concluido' ? 'badge-concluido' : 'badge-tramite'}">${item.estatus}</span></td>
+                    <td><button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="eliminarExpediente(${item.id})">Eliminar</button></td>
+                </tr>
+            `).join('');
+            actualizarDashboard();
+        }
 
+        function guardarAudiencia(e) {
+            e.preventDefault();
+            const nueva = {
+                id: Date.now(),
+                titulo: document.getElementById('agenda-titulo').value,
+                fecha: document.getElementById('agenda-fecha').value
+            };
+            audiencias.push(nueva);
+            localStorage.setItem('despacho_audiencias', JSON.stringify(audiencias));
+            document.getElementById('form-agenda').reset();
+            renderAgenda();
+            alert('¡Evento agendado con éxito!');
+        }
+
+        function eliminarAudiencia(id) {
+            audiencias = audiencias.filter(item => item.id !== id);
+            localStorage.setItem('despacho_audiencias', JSON.stringify(audiencias));
+            renderAgenda();
+        }
+
+        function renderAgenda() {
+            const tbody = document.getElementById('tabla-agenda-body');
+            if (audiencias.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #64748b;">Sin eventos agendados.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = audiencias.map(item => `
+                <tr>
+                    <td><strong>${item.titulo}</strong></td>
+                    <td>${new Date(item.fecha).toLocaleString()}</td>
+                    <td><button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="eliminarAudiencia(${item.id})">Eliminar</button></td>
+                </tr>
+            `).join('');
+            actualizarDashboard();
+        }
+
+        function actualizarDashboard() {
+            document.getElementById('stat-total').innerText = expedientes.length;
+            document.getElementById('stat-urgentes').innerText = expedientes.filter(i => i.estatus === 'Urgente').length;
+            document.getElementById('stat-audiencias').innerText = audiencias.length;
+        }
+
+        function exportarDatos() {
+            const datos = { expedientes, audiencias };
+            const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'respaldo_despacho_juridico.json';
+            a.click();
+        }
+
+        function importarDatos(e) {
+            const archivo = e.target.files[0];
+            if (!archivo) return;
+            const lector = new FileReader();
+            lector.onload = function(evento) {
+                try {
+                    const datos = JSON.parse(evento.target.result);
+                    if (datos.expedientes && datos.audiencias) {
+                        expedientes = datos.expedientes;
+                        audiencias = datos.audiencias;
+                        localStorage.setItem('despacho_expedientes', JSON.stringify(expedientes));
+                        localStorage.setItem('despacho_audiencias', JSON.stringify(audiencias));
+                        renderExpedientes();
+                        renderAgenda();
+                        alert('¡Datos importados y restaurados con éxito!');
+                    } else {
+                        alert('El archivo no tiene el formato correcto.');
+                    }
+                } catch (err) {
+                    alert('Error al leer el archivo de respaldo.');
+                }
+            };
+            lector.readAsText(archivo);
+        }
+
+        // Inicializar tablas al cargar
+        renderExpedientes();
+        renderAgenda();
+    </script>
 </body>
 </html>
