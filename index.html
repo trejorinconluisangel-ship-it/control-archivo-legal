@@ -15,6 +15,7 @@
             --danger: #e53e3e;
             --success: #38a169;
             --warning: #d69e2e;
+            --info: #3182ce;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -62,7 +63,7 @@
             color: #334155;
             flex: 1 1 auto;
             text-align: center;
-            min-width: 120px;
+            min-width: 110px;
         }
         .nav-tab.active {
             background-color: var(--primary);
@@ -114,6 +115,7 @@
         .btn-secondary { background-color: #4a5568; }
         .btn-success { background-color: var(--success); }
         .btn-danger { background-color: var(--danger); }
+        .btn-info { background-color: var(--info); }
         .actions-bar {
             display: flex;
             gap: 10px;
@@ -151,6 +153,7 @@
         .badge-urgente { background-color: var(--danger); }
         .badge-tramite { background-color: var(--warning); }
         .badge-concluido { background-color: var(--success); }
+        .badge-portal { background-color: #2b6cb0; }
         
         @media (max-width: 768px) {
             .nav-tab { flex: 1 1 45%; min-width: unset; }
@@ -161,37 +164,43 @@
     <div class="container">
         <header>
             <h1>Control Integral de Despacho Jurídico</h1>
-            <p class="subtitle">Gestión Avanzada, Archivo Físico y Respaldos</p>
+            <p class="subtitle">Gestión, Expedientes, Amparos y Monitoreo Diario</p>
         </header>
 
         <!-- Barra de Navegación -->
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="cambiarVista('dashboard')">Dashboard</button>
-            <button class="nav-tab" onclick="cambiarVista('expedientes')">Expedientes / Carpetas</button>
-            <button class="nav-tab" onclick="cambiarVista('agenda')">Agenda / Audiencias</button>
-            <button class="nav-tab" onclick="cambiarVista('respaldos')">Respaldos / Excel</button>
+            <button class="nav-tab" onclick="cambiarVista('expedientes')">Expedientes</button>
+            <button class="nav-tab" onclick="cambiarVista('monitoreo')">Monitoreo Amparos</button>
+            <button class="nav-tab" onclick="cambiarVista('checklist')">Checklist L-V</button>
+            <button class="nav-tab" onclick="cambiarVista('agenda')">Agenda</button>
+            <button class="nav-tab" onclick="cambiarVista('respaldos')">Respaldos</button>
         </div>
 
         <!-- VISTA 1: DASHBOARD -->
         <div id="vista-dashboard" class="vista-seccion">
             <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
-                <div class="card" style="flex: 1; min-width: 200px; text-align: center;">
-                    <h3 style="margin: 0; color: #64748b; font-size: 0.9rem;">Total Registros</h3>
+                <div class="card" style="flex: 1; min-width: 180px; text-align: center;">
+                    <h3 style="margin: 0; color: #64748b; font-size: 0.9rem;">Total Expedientes</h3>
                     <p id="stat-total" style="font-size: 2rem; font-weight: bold; color: var(--primary); margin: 5px 0;">0</p>
                 </div>
-                <div class="card" style="flex: 1; min-width: 200px; text-align: center;">
+                <div class="card" style="flex: 1; min-width: 180px; text-align: center;">
+                    <h3 style="margin: 0; color: #64748b; font-size: 0.9rem;">Amparos a Monitorear</h3>
+                    <p id="stat-monitoreo" style="font-size: 2rem; font-weight: bold; color: var(--info); margin: 5px 0;">0</p>
+                </div>
+                <div class="card" style="flex: 1; min-width: 180px; text-align: center;">
                     <h3 style="margin: 0; color: #64748b; font-size: 0.9rem;">Urgentes</h3>
                     <p id="stat-urgentes" style="font-size: 2rem; font-weight: bold; color: var(--danger); margin: 5px 0;">0</p>
                 </div>
-                <div class="card" style="flex: 1; min-width: 200px; text-align: center;">
+                <div class="card" style="flex: 1; min-width: 180px; text-align: center;">
                     <h3 style="margin: 0; color: #64748b; font-size: 0.9rem;">Próximas Audiencias</h3>
                     <p id="stat-audiencias" style="font-size: 2rem; font-weight: bold; color: var(--warning); margin: 5px 0;">0</p>
                 </div>
             </div>
             <div class="card">
-                <h2>Buscador Rápido por Anotaciones o Ubicación</h2>
+                <h2>Buscador Rápido Global</h2>
                 <div class="form-group">
-                    <input type="text" id="buscador-global" placeholder="Busca por palabra clave: ej. taller mecánico, cajon 4, amigo de Luis..." onkeyup="filtrarAsuntos()">
+                    <input type="text" id="buscador-global" placeholder="Busca por palabra clave, amparo, promovente, ubicación, notas..." onkeyup="filtrarAsuntos()">
                 </div>
             </div>
         </div>
@@ -199,8 +208,10 @@
         <!-- VISTA 2: EXPEDIENTES Y CARPETAS -->
         <div id="vista-expedientes" class="vista-seccion" style="display: none;">
             <div class="card">
-                <h2>Registrar Nuevo Asunto</h2>
+                <h2 id="form-titulo">Registrar Nuevo Asunto</h2>
                 <form id="form-expediente" onsubmit="guardarExpediente(event)">
+                    <input type="hidden" id="edit-id" value="">
+                    
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                         <div class="form-group" style="flex: 1; min-width: 180px;">
                             <label>Materia / Rama</label>
@@ -212,6 +223,10 @@
                         <div class="form-group" style="flex: 2; min-width: 250px;">
                             <label id="label-identificador">Número Identificador</label>
                             <input type="text" id="identificador" placeholder="Ej. CI/SJR/1010/2026" required>
+                        </div>
+                        <div class="form-group" id="grupo-causa" style="flex: 2; min-width: 250px;">
+                            <label>Causa Penal / Carpeta Judicial</label>
+                            <input type="text" id="causaPenal" placeholder="Ej. CP-123/2026">
                         </div>
                     </div>
 
@@ -254,7 +269,10 @@
                         <input type="text" id="anotaciones" placeholder="Ej. Asunto taller mecánico, amigo de Luis">
                     </div>
 
-                    <button type="submit" class="btn">Guardar Registro</button>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn" id="btn-guardar-cambios">Guardar Registro</button>
+                        <button type="button" class="btn btn-secondary" id="btn-cancelar-edicion" style="display:none;" onclick="cancelarEdicion()">Cancelar Edición</button>
+                    </div>
                 </form>
             </div>
 
@@ -266,6 +284,7 @@
                             <tr>
                                 <th>Materia</th>
                                 <th>Identificador</th>
+                                <th>Causa Penal / Judicial</th>
                                 <th>Delito</th>
                                 <th id="th-parte1">Ofendido</th>
                                 <th id="th-parte2">Imputado</th>
@@ -273,18 +292,112 @@
                                 <th>Ubicación Física</th>
                                 <th>Anotaciones</th>
                                 <th>Estatus</th>
-                                <th>Acción</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-expedientes-body">
-                            <tr><td colspan="10" style="text-align: center; color: #64748b;">No hay registros guardados.</td></tr>
+                            <tr><td colspan="11" style="text-align: center; color: #64748b;">No hay registros guardados.</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- VISTA 3: AGENDA / AUDIENCIAS -->
+        <!-- VISTA 3: MONITOREO DE AMPAROS -->
+        <div id="vista-monitoreo" class="vista-seccion" style="display: none;">
+            <div class="card">
+                <h2 id="form-monitoreo-titulo">Registrar Amparo / Expediente a Monitorear</h2>
+                <form id="form-monitoreo" onsubmit="guardarMonitoreo(event)">
+                    <input type="hidden" id="mon-edit-id" value="">
+                    
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 180px;">
+                            <label>Folio del Expediente / Amparo</label>
+                            <input type="text" id="mon-folio" placeholder="Ej. Amparo 123/2026" required>
+                        </div>
+                        <div class="form-group" style="flex: 2; min-width: 220px;">
+                            <label>Promovente / Quejoso</label>
+                            <input type="text" id="mon-promovente" placeholder="Nombre del promovente o quejoso" required>
+                        </div>
+                        <div class="form-group" style="flex: 2; min-width: 220px;">
+                            <label>Juzgado ante el cual se promueve</label>
+                            <input type="text" id="mon-juzgado" placeholder="Ej. Juzgado Primero de Distrito en Qro." required>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 220px;">
+                            <label>Portal de Verificación</label>
+                            <select id="mon-portal" required>
+                                <option value="PJF (Federal)">Portal PJF (Poder Judicial de la Federación)</option>
+                                <option value="PJQ (Querétaro)">Portal PJQ (Poder Judicial de Querétaro)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 3; min-width: 300px;">
+                            <label>Breve Descripción del Asunto</label>
+                            <input type="text" id="mon-descripcion" placeholder="Ej. Contra orden de aprehensión / Amparo indirecto..." required>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn" id="btn-mon-guardar">Agregar a Monitoreo</button>
+                        <button type="button" class="btn btn-secondary" id="btn-mon-cancelar" style="display:none;" onclick="cancelarEdicionMonitoreo()">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Listado de Amparos y Expedientes en Monitoreo</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Folio / Amparo</th>
+                                <th>Promovente / Quejoso</th>
+                                <th>Juzgado</th>
+                                <th>Portal de Verificación</th>
+                                <th>Descripción</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-monitoreo-body">
+                            <tr><td colspan="6" style="text-align: center; color: #64748b;">No hay amparos registrados para monitoreo.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 4: CHECKLIST LUNES A VIERNES -->
+        <div id="vista-checklist" class="vista-seccion" style="display: none;">
+            <div class="card">
+                <h2>Checklist de Consulta Diaria (Lunes a Viernes)</h2>
+                <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 15px;">
+                    Marca las casillas conforme vayas revisando los portales correspondientes cada día de la semana. El estatus se guarda automáticamente en tu dispositivo.
+                </p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Folio / Amparo</th>
+                                <th>Promovente</th>
+                                <th>Portal</th>
+                                <th style="text-align: center;">Lunes</th>
+                                <th style="text-align: center;">Martes</th>
+                                <th style="text-align: center;">Miércoles</th>
+                                <th style="text-align: center;">Jueves</th>
+                                <th style="text-align: center;">Viernes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-checklist-body">
+                            <tr><td colspan="8" style="text-align: center; color: #64748b;">No hay amparos en la lista de monitoreo. Registra amparos primero.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 5: AGENDA / AUDIENCIAS -->
         <div id="vista-agenda" class="vista-seccion" style="display: none;">
             <div class="card">
                 <h2>Programar Audiencia o Vencimiento</h2>
@@ -322,7 +435,7 @@
             </div>
         </div>
 
-        <!-- VISTA 4: RESPALDOS Y EXCEL -->
+        <!-- VISTA 6: RESPALDOS Y EXCEL -->
         <div id="vista-respaldos" class="vista-seccion" style="display: none;">
             <div class="card">
                 <h2>Respaldos e Integración con Excel (CSV)</h2>
@@ -342,6 +455,8 @@
 
     <script>
         let expedientes = JSON.parse(localStorage.getItem('despacho_expedientes')) || [];
+        let monitoreo = JSON.parse(localStorage.getItem('despacho_monitoreo')) || [];
+        let checklist = JSON.parse(localStorage.getItem('despacho_checklist')) || {};
         let audiencias = JSON.parse(localStorage.getItem('despacho_audiencias')) || [];
 
         function cambiarVista(vista) {
@@ -349,12 +464,14 @@
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
             document.getElementById('vista-' + vista).style.display = 'block';
             event.currentTarget.classList.add('active');
+            if(vista === 'checklist') renderChecklist();
             actualizarDashboard();
         }
 
         function actualizarFormularioRama() {
             const tipo = document.getElementById('tipo').value;
             const grupoDelito = document.getElementById('grupo-delito');
+            const grupoCausa = document.getElementById('grupo-causa');
             const lblId = document.getElementById('label-identificador');
             const txtId = document.getElementById('identificador');
             const lblP1 = document.getElementById('label-parte1');
@@ -369,6 +486,7 @@
 
             if (tipo === 'Penal') {
                 grupoDelito.style.display = 'block';
+                grupoCausa.style.display = 'block';
                 lblId.innerText = 'Número Identificador (Ej. CI/SJR/1010/2026)';
                 txtId.placeholder = 'CI/SJR/1010/2026';
                 lblP1.innerText = 'Ofendido';
@@ -382,7 +500,9 @@
                 thUbi.innerText = 'Fiscalía / Unidad';
             } else {
                 grupoDelito.style.display = 'none';
+                grupoCausa.style.display = 'none';
                 document.getElementById('delito').value = 'N/A';
+                document.getElementById('causaPenal').value = 'N/A';
                 lblId.innerText = 'Número de Expediente (Ej. 1010/2026)';
                 txtId.placeholder = '1010/2026';
                 lblP1.innerText = 'Parte Demandante / Actor';
@@ -397,13 +517,17 @@
             }
         }
 
+        // CRUD EXPEDIENTES
         function guardarExpediente(e) {
             e.preventDefault();
             const tipo = document.getElementById('tipo').value;
-            const nuevo = {
-                id: Date.now(),
+            const editId = document.getElementById('edit-id').value;
+            
+            const datosRegistro = {
+                id: editId ? Number(editId) : Date.now(),
                 tipo: tipo,
                 identificador: document.getElementById('identificador').value,
+                causaPenal: tipo === 'Penal' ? (document.getElementById('causaPenal').value || 'Sin judicializar') : 'N/A',
                 delito: tipo === 'Penal' ? document.getElementById('delito').value : 'N/A',
                 parte1: document.getElementById('parte1').value,
                 parte2: document.getElementById('parte2').value,
@@ -412,12 +536,53 @@
                 anotaciones: document.getElementById('anotaciones').value,
                 estatus: document.getElementById('estatus').value
             };
-            expedientes.push(nuevo);
+
+            if (editId) {
+                expedientes = expedientes.map(item => item.id === Number(editId) ? datosRegistro : item);
+                alert('¡Registro actualizado con éxito!');
+            } else {
+                expedientes.push(datosRegistro);
+                alert('¡Registro guardado con éxito!');
+            }
+
             localStorage.setItem('despacho_expedientes', JSON.stringify(expedientes));
-            document.getElementById('form-expediente').reset();
-            actualizarFormularioRama();
+            cancelarEdicion();
             renderExpedientes();
-            alert('¡Registro guardado con éxito!');
+        }
+
+        function editarExpediente(id) {
+            const item = expedientes.find(i => i.id === id);
+            if (!item) return;
+
+            document.getElementById('edit-id').value = item.id;
+            document.getElementById('tipo').value = item.tipo;
+            actualizarFormularioRama();
+
+            document.getElementById('identificador').value = item.identificador;
+            if (item.tipo === 'Penal') {
+                document.getElementById('causaPenal').value = item.causaPenal || '';
+                document.getElementById('delito').value = item.delito || '';
+            }
+            document.getElementById('parte1').value = item.parte1;
+            document.getElementById('parte2').value = item.parte2;
+            document.getElementById('ubicacion').value = item.ubicacion;
+            document.getElementById('ubicacionFisica').value = item.ubicacionFisica;
+            document.getElementById('anotaciones').value = item.anotaciones;
+            document.getElementById('estatus').value = item.estatus;
+
+            document.getElementById('form-titulo').innerText = 'Editar Registro de Asunto';
+            document.getElementById('btn-guardar-cambios').innerText = 'Actualizar Registro';
+            document.getElementById('btn-cancelar-edicion').style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelarEdicion() {
+            document.getElementById('form-expediente').reset();
+            document.getElementById('edit-id').value = '';
+            document.getElementById('form-titulo').innerText = 'Registrar Nuevo Asunto';
+            document.getElementById('btn-guardar-cambios').innerText = 'Guardar Registro';
+            document.getElementById('btn-cancelar-edicion').style.display = 'none';
+            actualizarFormularioRama();
         }
 
         function eliminarExpediente(id) {
@@ -431,13 +596,14 @@
         function renderExpedientes(lista = expedientes) {
             const tbody = document.getElementById('tabla-expedientes-body');
             if (lista.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: #64748b;">No hay registros encontrados.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align: center; color: #64748b;">No hay registros encontrados.</td></tr>';
                 return;
             }
             tbody.innerHTML = lista.map(item => `
                 <tr>
                     <td>${item.tipo}</td>
                     <td><strong>${item.identificador}</strong></td>
+                    <td><span style="color: #2b6cb0; font-weight: 500;">${item.causaPenal || 'N/A'}</span></td>
                     <td>${item.delito}</td>
                     <td>${item.parte1}</td>
                     <td>${item.parte2}</td>
@@ -445,16 +611,135 @@
                     <td>${item.ubicacionFisica}</td>
                     <td><span style="color: #b45309; font-weight: 500;">${item.anotaciones}</span></td>
                     <td><span class="badge ${item.estatus === 'Urgente' ? 'badge-urgente' : item.estatus === 'Concluido' ? 'badge-concluido' : 'badge-tramite'}">${item.estatus}</span></td>
-                    <td><button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.75rem;" onclick="eliminarExpediente(${item.id})">Eliminar</button></td>
+                    <td>
+                        <button class="btn btn-info" style="padding: 4px 8px; font-size: 0.75rem; margin-bottom: 3px;" onclick="editarExpediente(${item.id})">Editar</button>
+                        <button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="eliminarExpediente(${item.id})">Eliminar</button>
+                    </td>
                 </tr>
             `).join('');
             actualizarDashboard();
         }
 
+        // CRUD MONITOREO DE AMPAROS
+        function guardarMonitoreo(e) {
+            e.preventDefault();
+            const editId = document.getElementById('mon-edit-id').value;
+            const nuevoMon = {
+                id: editId ? Number(editId) : Date.now(),
+                folio: document.getElementById('mon-folio').value,
+                promovente: document.getElementById('mon-promovente').value,
+                juzgado: document.getElementById('mon-juzgado').value,
+                portal: document.getElementById('mon-portal').value,
+                descripcion: document.getElementById('mon-descripcion').value
+            };
+
+            if (editId) {
+                monitoreo = monitoreo.map(i => i.id === Number(editId) ? nuevoMon : i);
+                alert('¡Amparo actualizado con éxito!');
+            } else {
+                monitoreo.push(nuevoMon);
+                alert('¡Amparo agregado a monitoreo!');
+            }
+
+            localStorage.setItem('despacho_monitoreo', JSON.stringify(monitoreo));
+            cancelarEdicionMonitoreo();
+            renderMonitoreo();
+        }
+
+        function editarMonitoreo(id) {
+            const item = monitoreo.find(i => i.id === id);
+            if (!item) return;
+
+            document.getElementById('mon-edit-id').value = item.id;
+            document.getElementById('mon-folio').value = item.folio;
+            document.getElementById('mon-promovente').value = item.promovente;
+            document.getElementById('mon-juzgado').value = item.juzgado;
+            document.getElementById('mon-portal').value = item.portal;
+            document.getElementById('mon-descripcion').value = item.descripcion;
+
+            document.getElementById('form-monitoreo-titulo').innerText = 'Editar Amparo en Monitoreo';
+            document.getElementById('btn-mon-guardar').innerText = 'Actualizar Amparo';
+            document.getElementById('btn-mon-cancelar').style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelarEdicionMonitoreo() {
+            document.getElementById('form-monitoreo').reset();
+            document.getElementById('mon-edit-id').value = '';
+            document.getElementById('form-monitoreo-titulo').innerText = 'Registrar Amparo / Expediente a Monitorear';
+            document.getElementById('btn-mon-guardar').innerText = 'Agregar a Monitoreo';
+            document.getElementById('btn-mon-cancelar').style.display = 'none';
+        }
+
+        function eliminarMonitoreo(id) {
+            if(confirm('¿Desea eliminar este amparo de la lista de monitoreo?')) {
+                monitoreo = monitoreo.filter(i => i.id !== id);
+                localStorage.setItem('despacho_monitoreo', JSON.stringify(monitoreo));
+                renderMonitoreo();
+            }
+        }
+
+        function renderMonitoreo() {
+            const tbody = document.getElementById('tabla-monitoreo-body');
+            if (monitoreo.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b;">No hay amparos registrados para monitoreo.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = monitoreo.map(item => `
+                <tr>
+                    <td><strong>${item.folio}</strong></td>
+                    <td>${item.promovente}</td>
+                    <td>${item.juzgado}</td>
+                    <td><span class="badge badge-portal">${item.portal}</span></td>
+                    <td>${item.descripcion}</td>
+                    <td>
+                        <button class="btn btn-info" style="padding: 4px 8px; font-size: 0.75rem; margin-bottom: 3px;" onclick="editarMonitoreo(${item.id})">Editar</button>
+                        <button class="btn btn-danger" style="padding: 4px 8px; font-size: 0.75rem;" onclick="eliminarMonitoreo(${item.id})">Eliminar</button>
+                    </td>
+                </tr>
+            `).join('');
+            actualizarDashboard();
+        }
+
+        // CHECKLIST LUNES A VIERNES
+        function renderChecklist() {
+            const tbody = document.getElementById('tabla-checklist-body');
+            if (monitoreo.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #64748b;">No hay amparos en la lista de monitoreo. Registra amparos primero.</td></tr>';
+                return;
+            }
+            const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
+            tbody.innerHTML = monitoreo.map(item => {
+                if (!checklist[item.id]) checklist[item.id] = { lunes: false, martes: false, miercoles: false, jueves: false, viernes: false };
+                return `
+                    <tr>
+                        <td><strong>${item.folio}</strong></td>
+                        <td>${item.promovente}</td>
+                        <td><span class="badge badge-portal">${item.portal}</span></td>
+                        ${dias.map(dia => `
+                            <td style="text-align: center;">
+                                <input type="checkbox" style="width: 20px; height: 20px; cursor: pointer;" 
+                                    ${checklist[item.id][dia] ? 'checked' : ''} 
+                                    onchange="toggleChecklist(${item.id}, '${dia}', this.checked)">
+                            </td>
+                        `).join('')}
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function toggleChecklist(id, dia, estado) {
+            if (!checklist[id]) checklist[id] = { lunes: false, martes: false, miercoles: false, jueves: false, viernes: false };
+            checklist[id][dia] = estado;
+            localStorage.setItem('despacho_checklist', JSON.stringify(checklist));
+        }
+
+        // BUSCADOR GLOBAL
         function filtrarAsuntos() {
             const texto = document.getElementById('buscador-global').value.toLowerCase();
             const filtrados = expedientes.filter(item => 
                 (item.identificador && item.identificador.toLowerCase().includes(texto)) ||
+                (item.causaPenal && item.causaPenal.toLowerCase().includes(texto)) ||
                 (item.anotaciones && item.anotaciones.toLowerCase().includes(texto)) ||
                 (item.ubicacion && item.ubicacion.toLowerCase().includes(texto)) ||
                 (item.ubicacionFisica && item.ubicacionFisica.toLowerCase().includes(texto)) ||
@@ -473,8 +758,14 @@
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
             document.getElementById('vista-' + vista).style.display = 'block';
             if(vista === 'expedientes') document.querySelectorAll('.nav-tab')[1].classList.add('active');
+            if(vista === 'monitoreo') document.querySelectorAll('.nav-tab')[2].classList.add('active');
+            if(vista === 'checklist') {
+                document.querySelectorAll('.nav-tab')[3].classList.add('active');
+                renderChecklist();
+            }
         }
 
+        // AGENDA
         function guardarAudiencia(e) {
             e.preventDefault();
             const nueva = {
@@ -513,14 +804,16 @@
 
         function actualizarDashboard() {
             document.getElementById('stat-total').innerText = expedientes.length;
+            document.getElementById('stat-monitoreo').innerText = monitoreo.length;
             document.getElementById('stat-urgentes').innerText = expedientes.filter(i => i.estatus === 'Urgente').length;
             document.getElementById('stat-audiencias').innerText = audiencias.length;
         }
 
+        // RESPALDOS
         function exportarExcelCSV() {
-            let csv = 'Materia,Identificador,Delito,Parte1,Parte2,Ubicacion_Juzgado_Fiscalia,UbicacionFisica,Anotaciones,Estatus\n';
+            let csv = 'Materia,Identificador,CausaPenal,Delito,Parte1,Parte2,Ubicacion_Juzgado_Fiscalia,UbicacionFisica,Anotaciones,Estatus\n';
             expedientes.forEach(i => {
-                csv += `"${i.tipo}","${i.identificador}","${i.delito}","${i.parte1}","${i.parte2}","${i.ubicacion}","${i.ubicacionFisica}","${i.anotaciones}","${i.estatus}"\n`;
+                csv += `"${i.tipo}","${i.identificador}","${i.causaPenal || 'N/A'}","${i.delito}","${i.parte1}","${i.parte2}","${i.ubicacion}","${i.ubicacionFisica}","${i.anotaciones}","${i.estatus}"\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
@@ -531,7 +824,7 @@
         }
 
         function exportarDatos() {
-            const datos = { expedientes, audiencias };
+            const datos = { expedientes, monitoreo, checklist, audiencias };
             const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -547,12 +840,17 @@
             lector.onload = function(evento) {
                 try {
                     const datos = JSON.parse(evento.target.result);
-                    if (datos.expedientes && datos.audiencias) {
+                    if (datos.expedientes) {
                         expedientes = datos.expedientes;
-                        audiencias = datos.audiencias;
+                        monitoreo = datos.monitoreo || [];
+                        checklist = datos.checklist || {};
+                        audiencias = datos.audiencias || [];
                         localStorage.setItem('despacho_expedientes', JSON.stringify(expedientes));
+                        localStorage.setItem('despacho_monitoreo', JSON.stringify(monitoreo));
+                        localStorage.setItem('despacho_checklist', JSON.stringify(checklist));
                         localStorage.setItem('despacho_audiencias', JSON.stringify(audiencias));
                         renderExpedientes();
+                        renderMonitoreo();
                         renderAgenda();
                         alert('¡Datos restaurados con éxito!');
                     }
@@ -564,6 +862,7 @@
         }
 
         renderExpedientes();
+        renderMonitoreo();
         renderAgenda();
     </script>
 </body>
